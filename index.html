@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Vueで作ったタイピングゲーム</title>
+    </head>
+    <body>
+        <div id="app">
+            <div class="wrap">
+                <h2 class="typing">タイピングゲーム</h2>
+                <div v-if="playing">
+                    <p>出てきた文字をタイピングして下さい。<br/>正しい文字をタイピングすると文字の色が変わります。<br/></p>
+                    <p class="typing"><span>{{pressed}}</span>{{word}}</p><!--/.-->
+                    <p>ミスの数は{{miss}}</p>
+                    <p>{{helpWord}}</p>
+                </div>
+                <div v-else><img src="images/typing.jpg" alt=""></div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data:{
+                    words:['react','python','vue','html','css'],
+                    word:'',
+                    pressed:'',
+                    playing:false,
+                    miss:0,
+                    helpWord:''
+                },
+                created(){
+                    addEventListener('keydown',e => {
+                        if(e.key !== ' ' || this.playing){
+                            return;
+                        }
+                        this.playing = true;
+                        this.setWord();
+                        this.keyDown();
+                    });
+                },
+                methods:{
+                    setWord(){
+                        this.word = this.words.splice(Math.floor(Math.random() * this.words.length), 1)[0];
+                    },
+                    keyDown(){
+                        addEventListener('keydown',e => {
+                            if(e.key !== this.word[0]){
+                                this.miss++;
+                                return;
+                                
+                            }
+                            this.pressed += e.key;
+                            this.word = this.word.slice(1);
+                            if(this.word.length === 0){
+                                if(this.miss >= 3){
+                                    this.pressed = '';
+                                }
+                                if(this.words.length === 0){
+                                    this.word = '終了です'
+                                    return;
+                                }
+                                this.setWord();
+                            }
+                        });
+                    }
+                }
+            })
+        </script>
+        <style>
+            h2{
+            text-align: center;
+            font-size: 20px;
+            }
+            body {
+                text-align: center;
+            }
+            .typing{
+                font-size: 30px;
+                font-weight: bold;
+            }
+            span{
+                color:red;
+            }
+        </style>
+    </body>
+</html>
